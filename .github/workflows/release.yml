@@ -23,6 +23,8 @@ jobs:
         run: |
           cd android
           chmod +x ./gradlew
+          # Remove sandbox proxy settings for GitHub Actions
+          sed -i '/^systemProp\.\(http\|https\)\.proxy/d' gradle.properties
           if [ -n "${{ secrets.KEYSTORE_STORE_FILE_BASE64 }}" ]; then
             echo "Using release keystore from secrets"
             echo ${{ secrets.KEYSTORE_STORE_FILE_BASE64 }} | base64 --decode > app/${{ secrets.KEYSTORE_STORE_FILE }}
