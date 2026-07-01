@@ -195,26 +195,28 @@ jobs:
       - name: Release (Pre-release)
         shell: bash
         run: |
-          # Delete existing release if it exists
-          gh release delete v${{ env.PACKAGE_VERSION }} --yes --cleanup-tag 2>/dev/null || true
-          # Recreate tag (gh release delete might have deleted it)
-          git tag -f v${{ env.PACKAGE_VERSION }}
-          git push -f origin v${{ env.PACKAGE_VERSION }}
           # Collect all available artifacts
           ASSETS=""
           for f in artifacts/*.apk artifacts/*.zip artifacts/*.tar.gz artifacts/*.tar.xz artifacts/*.7z; do
             [ -f "$f" ] && ASSETS="$ASSETS $f"
           done
-          # Add iOS IPA if available
           for f in artifacts/*.ipa; do
             [ -f "$f" ] && ASSETS="$ASSETS $f"
           done
           echo "Assets to upload: $ASSETS"
-          # Create new release with available artifacts
-          gh release create v${{ env.PACKAGE_VERSION }} \
-            --prerelease \
-            --title "v${{ env.PACKAGE_VERSION }}" \
-            --notes-file ./publish/changeLog.md \
-            $ASSETS
+          # Check if release exists
+          if gh release view v${{ env.PACKAGE_VERSION }} &>/dev/null; then
+            echo "Release exists, uploading assets..."
+            gh release upload v${{ env.PACKAGE_VERSION }} $ASSETS --clobber
+          else
+            echo "Creating new release..."
+            git tag -f v${{ env.PACKAGE_VERSION }}
+            git push -f origin v${{ env.PACKAGE_VERSION }}
+            gh release create v${{ env.PACKAGE_VERSION }} \
+              --prerelease \
+              --title "v${{ env.PACKAGE_VERSION }}" \
+              --notes-file ./publish/changeLog.md \
+              $ASSETS
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
