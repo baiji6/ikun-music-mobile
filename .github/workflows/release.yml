@@ -91,7 +91,7 @@ jobs:
           cd ios
           xcodebuild \
             -workspace ikunmusicmobile.xcworkspace \
-            -scheme ikunmusicmobile \
+            -scheme RnTemplate \
             -configuration Release \
             -archivePath ./build/ikunmusicmobile.xcarchive \
             -sdk iphoneos \
