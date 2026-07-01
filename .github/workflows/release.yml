@@ -57,7 +57,7 @@ jobs:
   # ==================== iOS 构建 ====================
   iOS:
     name: Build iOS
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: Check out git repository
         uses: actions/checkout@v4
@@ -71,11 +71,6 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
-
-      - name: Select Xcode 16.4
-        run: |
-          sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
-          xcodebuild -version
 
       - name: Install npm dependencies
         run: npm ci
