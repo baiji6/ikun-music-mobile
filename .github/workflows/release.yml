@@ -21,6 +21,8 @@ jobs:
       - name: Build Packages
         shell: bash
         run: |
+          # Fix: comment out oss.sonatype.org snapshot repo (causes 504 timeout)
+          sed -i 's|mavenRepoFromUrl("https://oss.sonatype.org|//mavenRepoFromUrl("https://oss.sonatype.org|' node_modules/@react-native/gradle-plugin/src/main/kotlin/com/facebook/react/utils/DependencyUtils.kt
           cd android
           chmod +x ./gradlew
           # Remove sandbox proxy settings for GitHub Actions
