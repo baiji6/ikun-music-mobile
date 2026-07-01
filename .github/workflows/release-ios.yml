@@ -2,6 +2,9 @@ name: Build & Release iOS
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   # ==================== iOS 构建 ====================
