@@ -1,13 +1,15 @@
-name: Build
+name: Build & Release
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
+  # ==================== Android 构建 ====================
   Android:
-    name: Android
+    name: Build Android
     runs-on: ubuntu-latest
     steps:
       - name: Check out git repository
@@ -38,12 +40,6 @@ jobs:
           $version = (Get-Content package.json | ConvertFrom-Json).version
           echo "PACKAGE_VERSION=$version" >> $env:GITHUB_ENV
 
-      - name: Create git tag
-        shell: bash
-        run: |
-          git tag -f v${{ env.PACKAGE_VERSION }}
-          git push -f origin v${{ env.PACKAGE_VERSION }}
-
       - name: Generate file MD5
         run: |
           cd android/app/build/outputs/apk/release
@@ -54,36 +50,149 @@ jobs:
         env:
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
 
-  Release:
-    name: Release
-    runs-on: ubuntu-latest
-    needs: [Android]
+  # ==================== iOS 构建 ====================
+  iOS:
+    name: Build iOS
+    runs-on: macos-latest
     steps:
       - name: Check out git repository
         uses: actions/checkout@v4
 
-      - name: Download Artifacts
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Install CocoaPods
+        run: |
+          gem install cocoapods
+          cd ios && pod install
+
+      - name: Get package version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build iOS Archive (unsigned)
+        run: |
+          cd ios
+          xcodebuild \
+            -workspace ikunmusicmobile.xcworkspace \
+            -scheme ikunmusicmobile \
+            -configuration Release \
+            -archivePath ./build/ikunmusicmobile.xcarchive \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            archive
+
+      - name: Create unsigned IPA
+        run: |
+          cd ios
+          mkdir -p Payload
+          cp -r ./build/ikunmusicmobile.xcarchive/Products/Applications/ikunmusicmobile.app Payload/
+          zip -r ikun-music-mobile-v${{ steps.version.outputs.version }}-ios-unsigned.ipa Payload
+          rm -rf Payload
+          ls -lh ikun-music-mobile-v${{ steps.version.outputs.version }}-ios-unsigned.ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa-v${{ steps.version.outputs.version }}
+          path: ios/ikun-music-mobile-v${{ steps.version.outputs.version }}-ios-unsigned.ipa
+
+  # ==================== 源码打包 ====================
+  Source:
+    name: Package Source
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out git repository
+        uses: actions/checkout@v4
+
+      - name: Get package version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Install 7z
+        run: sudo apt-get update && sudo apt-get install -y p7zip-full
+
+      - name: Package source (zip)
+        run: |
+          git archive --format=zip --output=ikun-music-mobile-v${{ steps.version.outputs.version }}-source.zip HEAD
+
+      - name: Package source (tar.gz)
+        run: |
+          git archive --format=tar.gz --output=ikun-music-mobile-v${{ steps.version.outputs.version }}-source.tar.gz HEAD
+
+      - name: Package source (tar.xz)
+        run: |
+          git archive --format=tar.gz --output=ikun-music-mobile-v${{ steps.version.outputs.version }}-source.tar.gz HEAD
+          xz -k ikun-music-mobile-v${{ steps.version.outputs.version }}-source.tar.gz
+          mv ikun-music-mobile-v${{ steps.version.outputs.version }}-source.tar.gz.xz ikun-music-mobile-v${{ steps.version.outputs.version }}-source.tar.xz
+
+      - name: Package source (7z)
+        run: |
+          7z a -mx=9 ikun-music-mobile-v${{ steps.version.outputs.version }}-source.7z ikun-music-mobile-v${{ steps.version.outputs.version }}-source.zip
+
+      - name: Upload source artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-v${{ steps.version.outputs.version }}
+          path: |
+            ikun-music-mobile-v${{ steps.version.outputs.version }}-source.zip
+            ikun-music-mobile-v${{ steps.version.outputs.version }}-source.tar.gz
+            ikun-music-mobile-v${{ steps.version.outputs.version }}-source.7z
+
+  # ==================== 发布 ====================
+  Release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [Android, iOS, Source]
+    steps:
+      - name: Check out git repository
+        uses: actions/checkout@v4
+
+      - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
           path: ./artifacts
           merge-multiple: true
 
+      - name: Get package version
+        run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
+
+      - name: Create git tag
+        shell: bash
+        run: |
+          git tag -f v${{ env.PACKAGE_VERSION }}
+          git push -f origin v${{ env.PACKAGE_VERSION }}
+
       - name: Generate file MD5
         run: |
           echo -e '\n### File MD5\n```' >> ./publish/changeLog.md
           cd artifacts
-          md5sum *.apk >> ../publish/changeLog.md
+          md5sum * >> ../publish/changeLog.md
           echo -e '```\n' >> ../publish/changeLog.md
           echo -e '\n[软件安装包说明](https://lyswhut.github.io/lx-music-doc/download#%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E5%8C%85%E8%AF%B4%E6%98%8E)\n' >> ../publish/changeLog.md
 
-      - name: Get package version
-        run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
-
-      - name: Release
+      - name: Release (Pre-release)
         uses: softprops/action-gh-release@v2
         with:
           body_path: ./publish/changeLog.md
-          prerelease: false
+          prerelease: true
           draft: false
           tag_name: v${{ env.PACKAGE_VERSION }}
           files: |
@@ -92,8 +201,10 @@ jobs:
             artifacts/ikun-music-mobile-v${{ env.PACKAGE_VERSION }}-x86_64.apk
             artifacts/ikun-music-mobile-v${{ env.PACKAGE_VERSION }}-x86.apk
             artifacts/ikun-music-mobile-v${{ env.PACKAGE_VERSION }}-universal.apk
-
-          # artifacts/lx-music-mobile-v${{ env.PACKAGE_VERSION }}-sl-arm64-v8a.apk
-          # artifacts/lx-music-mobile-v${{ env.PACKAGE_VERSION }}-android_5-universal.apk
+            artifacts/ikun-music-mobile-v${{ env.PACKAGE_VERSION }}-ios-unsigned.ipa
+            artifacts/ikun-music-mobile-v${{ env.PACKAGE_VERSION }}-source.zip
+            artifacts/ikun-music-mobile-v${{ env.PACKAGE_VERSION }}-source.tar.gz
+            artifacts/ikun-music-mobile-v${{ env.PACKAGE_VERSION }}-source.tar.xz
+            artifacts/ikun-music-mobile-v${{ env.PACKAGE_VERSION }}-source.7z
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
