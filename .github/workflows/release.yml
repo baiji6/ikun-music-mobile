@@ -28,7 +28,7 @@ jobs:
             rm -f app/${{ secrets.KEYSTORE_STORE_FILE }}
           else
             echo "Using debug keystore for release build"
-            printf 'storeFile=app/debug.keystore\nstorePassword=android\nkeyAlias=androiddebugkey\nkeyPassword=android\n' > keystore.properties
+            printf 'storeFile=debug.keystore\nstorePassword=android\nkeyAlias=androiddebugkey\nkeyPassword=android\n' > keystore.properties
             ./gradlew assembleRelease
           fi
 
