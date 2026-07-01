@@ -3,6 +3,7 @@ import Search from '../Views/Search'
 import SongList from '../Views/SongList'
 import Mylist from '../Views/Mylist'
 import Leaderboard from '../Views/Leaderboard'
+import PrivateFM from '../Views/PrivateFM'
 import Setting from '../Views/Setting'
 import commonState, { type InitState as CommonState } from '@/store/common/state'
 
@@ -29,6 +30,8 @@ const Main = () => {
         return <Leaderboard />
       case 'nav_love':
         return <Mylist />
+      case 'nav_private_fm':
+        return <PrivateFM />
       case 'nav_setting':
         return <Setting />
       case 'nav_search':

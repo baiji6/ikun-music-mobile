@@ -17,6 +17,7 @@ import IsAlwaysKeepStatusbarHeight from './IsAlwaysKeepStatusbarHeight'
 import IsShowBackBtn from './IsShowBackBtn'
 import IsShowExitBtn from './IsShowExitBtn'
 import DrawerLayoutPosition from './DrawerLayoutPosition'
+import WidgetEnable from './WidgetEnable'
 import { useI18n } from '@/lang/i18n'
 
 export default memo(() => {
@@ -40,6 +41,7 @@ export default memo(() => {
       <ShareType />
       <Source />
       <SourceName />
+      <WidgetEnable />
     </Section>
   )
 })

@@ -26,6 +26,7 @@ import {
 import { LIST_IDS } from '@/config/constant'
 import { addListMusics, removeListMusics } from '@/core/list'
 import { addDislikeInfo } from '@/core/dislikeList'
+import { addPlayHistory } from '@/core/playHistory'
 
 // import { checkMusicFileAvailable } from '@renderer/utils/music'
 
@@ -303,6 +304,13 @@ const handlePlay = async () => {
 
   if (settingState.setting['player.togglePlayMethod'] == 'random' && !playMusicInfo.isTempPlay)
     addPlayedList(playMusicInfo as LX.Player.PlayMusicInfo)
+
+  // 记录播放历史
+  if ('progress' in musicInfo) {
+    void addPlayHistory(musicInfo.metadata.musicInfo)
+  } else {
+    void addPlayHistory(musicInfo)
+  }
 
   debouncePlay(musicInfo)
 }

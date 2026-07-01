@@ -1,3 +1,4 @@
 <resources>
   <string name="app_name">IKUN Music</string>
+  <string name="widget_description">显示当前播放歌曲信息，支持播放/暂停、下一曲操作</string>
 </resources>

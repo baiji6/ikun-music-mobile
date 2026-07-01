@@ -73,6 +73,12 @@ const defaultSetting: LX.AppSetting = {
 
   'sync.enable': false,
 
+  'equalizer.enabled': false,
+  'equalizer.preset': 'Normal',
+  'equalizer.bandLevels': [0, 0, 0, 0, 0],
+
+  'widget.enabled': false,
+
   'theme.id': 'green',
   'theme.lightId': 'green',
   'theme.darkId': 'black',

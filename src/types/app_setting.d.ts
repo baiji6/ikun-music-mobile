@@ -361,6 +361,26 @@ declare global {
        * 是否启用同步
        */
       'sync.enable': boolean
+
+      /**
+       * 均衡器是否启用
+       */
+      'equalizer.enabled': boolean
+
+      /**
+       * 均衡器当前预设
+       */
+      'equalizer.preset': string
+
+      /**
+       * 均衡器各波段增益值
+       */
+      'equalizer.bandLevels': number[]
+
+      /**
+       * 是否启用桌面小组件
+       */
+      'widget.enabled': boolean
     }
   }
 }

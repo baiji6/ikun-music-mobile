@@ -14,6 +14,7 @@ import CommentBtn from './CommentBtn'
 import Btn from './Btn'
 import SettingPopup, { type SettingPopupType } from '../../components/SettingPopup'
 import DesktopLyricBtn from './DesktopLyricBtn'
+import EQBtn from './EQBtn'
 
 export const HEADER_HEIGHT = scaleSizeH(_HEADER_HEIGHT)
 
@@ -52,6 +53,7 @@ export default memo(() => {
         <Title />
         <DesktopLyricBtn />
         <CommentBtn />
+        <EQBtn />
         <Btn icon="slider" onPress={showSetting} />
       </View>
       <SettingPopup ref={popupRef} position="left" direction="horizontal" />

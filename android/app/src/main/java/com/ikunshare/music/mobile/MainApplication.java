@@ -15,6 +15,7 @@ import com.ikunshare.music.mobile.crypto.CryptoPackage;
 import com.ikunshare.music.mobile.lyric.LyricPackage;
 import com.ikunshare.music.mobile.userApi.UserApiPackage;
 import com.ikunshare.music.mobile.utils.UtilsPackage;
+import com.ikunshare.music.mobile.widget.WidgetPackage;
 
 public class MainApplication extends NavigationApplication {
 
@@ -36,6 +37,7 @@ public class MainApplication extends NavigationApplication {
         packages.add(new UtilsPackage());
         packages.add(new CryptoPackage());
         packages.add(new UserApiPackage());
+        packages.add(new WidgetPackage());
         return packages;
       }
 

@@ -76,6 +76,9 @@ export const storageDataPrefix = {
 
   dislikeList: '@dislike_list',
 
+  playHistoryList: '@play_history_list',
+  favoriteList: '@favorite_list',
+
   userApi: '@user_api__',
 } as const
 
@@ -101,6 +104,10 @@ export const NAV_MENUS = [
   { id: 'nav_songlist', icon: 'album' },
   { id: 'nav_top', icon: 'leaderboard' },
   { id: 'nav_love', icon: 'love' },
+  { id: 'nav_private_fm', icon: 'love' },
+  { id: 'nav_listening_report', icon: 'music_time' },
+  { id: 'nav_favorite', icon: 'heart' },
+  { id: 'nav_history', icon: 'time' },
   // { id: 'download', icon: 'download-2' },
   { id: 'nav_setting', icon: 'setting' },
 ] as const

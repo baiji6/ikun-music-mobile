@@ -19,11 +19,15 @@ import {
   VERSION_MODAL,
   PACT_MODAL,
   SYNC_MODE_MODAL,
+  LISTENING_REPORT_SCREEN,
+  LYRIC_CARD_SCREEN,
   // SETTING_SCREEN,
 } from './screenNames'
 import VersionModal from './components/VersionModal'
 import PactModal from './components/PactModal'
 import SyncModeModal from './components/SyncModeModal'
+import ListeningReport from '@/screens/Home/Views/ListeningReport'
+import LyricCard from '@/screens/Home/Views/LyricCard'
 
 function WrappedComponent(Component: any) {
   return function inject(props: Record<string, any>) {
@@ -45,6 +49,8 @@ export default () => {
   Navigation.registerComponent(VERSION_MODAL, () => WrappedComponent(VersionModal))
   Navigation.registerComponent(PACT_MODAL, () => WrappedComponent(PactModal))
   Navigation.registerComponent(SYNC_MODE_MODAL, () => WrappedComponent(SyncModeModal))
+  Navigation.registerComponent(LISTENING_REPORT_SCREEN, () => WrappedComponent(ListeningReport))
+  Navigation.registerComponent(LYRIC_CARD_SCREEN, () => WrappedComponent(LyricCard))
   // Navigation.registerComponent(SETTING_SCREEN, () => WrappedComponent(Setting))
 
   console.info('All screens have been registered...')

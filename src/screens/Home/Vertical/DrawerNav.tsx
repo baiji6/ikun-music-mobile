@@ -12,6 +12,8 @@ import type { InitState } from '@/store/common/state'
 import { exitApp, setNavActiveId } from '@/core/common'
 import Text from '@/components/common/Text'
 import { useSettingValue } from '@/store/setting/hook'
+import { navigations } from '@/navigation'
+import commonState from '@/store/common/state'
 
 const styles = createStyle({
   container: {
@@ -135,6 +137,10 @@ export default memo(() => {
         return
       case 'back_home':
         backHome()
+        return
+      case 'nav_listening_report':
+        global.app_event.changeMenuVisible(false)
+        navigations.pushListeningReportScreen(commonState.componentIds.home!)
         return
     }
 

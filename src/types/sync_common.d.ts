@@ -25,6 +25,14 @@ declare namespace LX {
       ServerSyncDislikeActions
     >
 
+    type ServerSyncFavoriteActions = WarpPromiseRecord<{
+      onFavoriteSyncAction: (action: LX.Sync.Favorite.ActionList) => void
+    }>
+    type ServerSyncHandlerFavoriteActions<Socket> = WarpSyncHandlerActions<
+      Socket,
+      ServerSyncFavoriteActions
+    >
+
     type ClientSyncActions = WarpPromiseRecord<{
       getEnabledFeatures: (
         serverType: ServerType,
@@ -58,6 +66,19 @@ declare namespace LX {
     type ClientSyncHandlerDislikeActions<Socket> = WarpSyncHandlerActions<
       Socket,
       ClientSyncDislikeActions
+    >
+
+    type ClientSyncFavoriteActions = WarpPromiseRecord<{
+      onFavoriteSyncAction: (action: LX.Sync.Favorite.ActionList) => void
+      favorite_sync_get_md5: () => string
+      favorite_sync_get_sync_mode: () => LX.Sync.Favorite.SyncMode
+      favorite_sync_get_list_data: () => LX.Music.MusicInfo[]
+      favorite_sync_set_list_data: (data: LX.Music.MusicInfo[]) => void
+      favorite_sync_finished: () => void
+    }>
+    type ClientSyncHandlerFavoriteActions<Socket> = WarpSyncHandlerActions<
+      Socket,
+      ClientSyncFavoriteActions
     >
   }
 }

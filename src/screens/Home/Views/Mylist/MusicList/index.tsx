@@ -13,6 +13,7 @@ import {
   handleUpdateMusicInfo,
   handleUpdateMusicPosition,
 } from './listAction'
+import { toggleFavorite } from '@/core/favoriteList'
 import List, { type ListType } from './List'
 import ListMusicAdd, {
   type MusicAddModalType as ListMusicAddType,
@@ -224,6 +225,9 @@ export default () => {
         }}
         onDislikeMusic={(info) => {
           void handleDislikeMusic(info.musicInfo)
+        }}
+        onFavoriteMusic={(info) => {
+          void toggleFavorite(info.musicInfo)
         }}
         onCopyName={(info) => {
           handleShare(info.musicInfo)

@@ -3,6 +3,7 @@ import { useI18n } from '@/lang'
 import settingState from '@/store/setting/state'
 import Menu, { type Menus, type MenuType, type Position } from '@/components/common/Menu'
 import { hasDislike } from '@/core/dislikeList'
+import { hasFavorite } from '@/core/favoriteList'
 import { existsFile } from '@/utils/fs'
 
 export interface SelectInfo {
@@ -26,6 +27,7 @@ export interface ListMenuProps {
   onToggleSource: (selectInfo: SelectInfo) => void
   onMusicSourceDetail: (selectInfo: SelectInfo) => void
   onDislikeMusic: (selectInfo: SelectInfo) => void
+  onFavoriteMusic: (selectInfo: SelectInfo) => void
   onRemove: (selectInfo: SelectInfo) => void
 }
 export interface ListMenuType {
@@ -78,6 +80,7 @@ export default forwardRef<ListMenuType, ListMenuProps>((props, ref) => {
         label: t('music_source_detail'),
       },
       { action: 'dislike', disabled: hasDislike(musicInfo), label: t('dislike') },
+      { action: 'favorite', label: hasFavorite(musicInfo) ? t('uncollect') : t('collect') },
       { action: 'remove', label: t('delete') },
     ]
     if (musicInfo.source == 'local')
@@ -136,6 +139,9 @@ export default forwardRef<ListMenuType, ListMenuProps>((props, ref) => {
         break
       case 'dislike':
         props.onDislikeMusic(selectInfo)
+        break
+      case 'favorite':
+        props.onFavoriteMusic(selectInfo)
         break
       case 'remove':
         props.onRemove(selectInfo)

@@ -2,6 +2,7 @@ import { version } from '../../package.json'
 import { createAppEventHub } from '@/event/appEvent'
 import { createListEventHub } from '@/event/listEvent'
 import { createDislikeEventHub } from '@/event/dislikeEvent'
+import { createFavoriteEventHub } from '@/event/favoriteEvent'
 import { createStateEventHub } from '@/event/stateEvent'
 if (process.versions == null) {
   // @ts-expect-error
@@ -75,4 +76,5 @@ global.lx = {
 global.app_event = createAppEventHub()
 global.list_event = createListEventHub()
 global.dislike_event = createDislikeEventHub()
+global.favorite_event = createFavoriteEventHub()
 global.state_event = createStateEventHub()

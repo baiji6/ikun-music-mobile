@@ -103,5 +103,23 @@
                  android:name="android.support.FILE_PROVIDER_PATHS"
                  android:resource="@xml/file_paths"/>
     </provider>
+
+    <!-- 桌面小组件 Provider -->
+    <receiver
+      android:name="com.ikunshare.music.mobile.widget.MusicWidgetProvider"
+      android:exported="true"
+      android:label="IKUN Music 播放器">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data
+        android:name="android.appwidget.provider"
+        android:resource="@xml/music_widget_info" />
+    </receiver>
+
+    <!-- 桌面小组件更新服务 -->
+    <service
+      android:name="com.ikunshare.music.mobile.widget.MusicWidgetService"
+      android:exported="false" />
   </application>
 </manifest>

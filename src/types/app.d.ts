@@ -1,6 +1,7 @@
 import type { AppEventTypes } from '@/event/appEvent'
 import type { ListEventTypes } from '@/event/listEvent'
 import type { DislikeEventTypes } from '@/event/dislikeEvent'
+import type { FavoriteEventTypes } from '@/event/favoriteEvent'
 import type { StateEventTypes } from '@/event/stateEvent'
 import type { I18n } from '@/lang/i18n'
 import type { Buffer as _Buffer } from 'buffer'
@@ -65,6 +66,7 @@ declare global {
   var app_event: AppEventTypes
   var list_event: ListEventTypes
   var dislike_event: DislikeEventTypes
+  var favorite_event: FavoriteEventTypes
   var state_event: StateEventTypes
 
   var Buffer: typeof _Buffer

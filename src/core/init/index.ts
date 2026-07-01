@@ -7,6 +7,7 @@ import initPlayer from './player'
 import dataInit from './dataInit'
 import initSync from './sync'
 import initCommonState from './common'
+import initWidgetIntegration from '@/nativeModules/widgetIntegration'
 import { initDeeplink } from './deeplink'
 import { setApiSource } from '@/core/apiSource'
 import commonActions from '@/store/common/action'
@@ -62,6 +63,9 @@ export default async () => {
 
   void initSync(setting)
   bootLog('Sync inited.')
+
+  initWidgetIntegration()
+  bootLog('Widget integration inited.')
 
   // syncSetting()
 

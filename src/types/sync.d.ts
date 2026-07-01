@@ -21,6 +21,7 @@ declare global {
         moduleReadys: {
           list: boolean
           dislike: boolean
+          favorite: boolean
         }
 
         onClose: (handler: (err: Error) => void | Promise<void>) => () => void
@@ -28,11 +29,13 @@ declare global {
         remote: LX.Sync.ServerSyncActions
         remoteQueueList: LX.Sync.ServerSyncListActions
         remoteQueueDislike: LX.Sync.ServerSyncDislikeActions
+        remoteQueueFavorite: LX.Sync.ServerSyncFavoriteActions
       }
 
       interface ModeTypes {
         list: LX.Sync.List.SyncMode
         dislike: LX.Sync.Dislike.SyncMode
+        favorite: LX.Sync.Favorite.SyncMode
       }
 
       type ModeType = { [K in keyof ModeTypes]: { type: K; mode: ModeTypes[K] } }[keyof ModeTypes]
