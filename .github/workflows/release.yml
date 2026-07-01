@@ -20,10 +20,17 @@ jobs:
         shell: bash
         run: |
           cd android
-          echo ${{ secrets.KEYSTORE_STORE_FILE_BASE64 }} | base64 --decode > app/${{ secrets.KEYSTORE_STORE_FILE }}
           chmod +x ./gradlew
-          ./gradlew assembleRelease -PMYAPP_UPLOAD_STORE_FILE='${{ secrets.KEYSTORE_STORE_FILE }}' -PMYAPP_UPLOAD_KEY_ALIAS='${{ secrets.KEYSTORE_KEY_ALIAS }}' -PMYAPP_UPLOAD_STORE_PASSWORD='${{ secrets.KEYSTORE_PASSWORD }}' -PMYAPP_UPLOAD_KEY_PASSWORD='${{ secrets.KEYSTORE_KEY_PASSWORD }}'
-          rm -f app/${{ secrets.KEYSTORE_STORE_FILE }}
+          if [ -n "${{ secrets.KEYSTORE_STORE_FILE_BASE64 }}" ]; then
+            echo "Using release keystore from secrets"
+            echo ${{ secrets.KEYSTORE_STORE_FILE_BASE64 }} | base64 --decode > app/${{ secrets.KEYSTORE_STORE_FILE }}
+            ./gradlew assembleRelease -PMYAPP_UPLOAD_STORE_FILE='${{ secrets.KEYSTORE_STORE_FILE }}' -PMYAPP_UPLOAD_KEY_ALIAS='${{ secrets.KEYSTORE_KEY_ALIAS }}' -PMYAPP_UPLOAD_STORE_PASSWORD='${{ secrets.KEYSTORE_PASSWORD }}' -PMYAPP_UPLOAD_KEY_PASSWORD='${{ secrets.KEYSTORE_KEY_PASSWORD }}'
+            rm -f app/${{ secrets.KEYSTORE_STORE_FILE }}
+          else
+            echo "Using debug keystore for release build"
+            printf 'storeFile=app/debug.keystore\nstorePassword=android\nkeyAlias=androiddebugkey\nkeyPassword=android\n' > keystore.properties
+            ./gradlew assembleRelease
+          fi
 
       - name: Get package version
         shell: pwsh
@@ -32,13 +39,10 @@ jobs:
           echo "PACKAGE_VERSION=$version" >> $env:GITHUB_ENV
 
       - name: Create git tag
-        uses: pkgdeps/git-tag-action@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          github_repo: ${{ github.repository }}
-          version: ${{ env.PACKAGE_VERSION }}
-          git_commit_sha: ${{ github.sha }}
-          git_tag_prefix: 'v'
+        shell: bash
+        run: |
+          git tag -f v${{ env.PACKAGE_VERSION }}
+          git push -f origin v${{ env.PACKAGE_VERSION }}
 
       - name: Generate file MD5
         run: |
