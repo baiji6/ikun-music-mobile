@@ -77,8 +77,8 @@ jobs:
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-ipa-v${{ steps.version.outputs.version }}
-          path: ios/ikun-music-mobile-v${{ steps.version.outputs.version }}-ios-unsigned.ipa
+          name: ios-ipa
+          path: ios/*.ipa
 
   # ==================== 发布 ====================
   Release:
@@ -92,7 +92,7 @@ jobs:
       - name: Download IPA Artifact
         uses: actions/download-artifact@v4
         with:
-          name: ios-ipa-v${{ steps.version.outputs.version }}
+          name: ios-ipa
           path: ./artifacts
 
       - name: Get package version
